@@ -123,3 +123,5 @@ export HOMEBREW_OPEN_AFTER_INSTALL=1
 curlfollow() { curl -sLI "$1" | grep -i Location; }
 curlcontent() { curl -sLI "$1" | grep -i content-disposition; }
 
+export PATH="/usr/local/sbin:$PATH"
+

@@ -70,6 +70,12 @@ ZSH_CUSTOM=$HOME/.oh-my-zsh-custom
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
 
+# omz quiet updates
+zstyle ':omz:update' verbose minimal # only few lines
+
+# omz disable auto updates
+zstyle ':omz:update' mode disabled
+
 source $ZSH/oh-my-zsh.sh
 
 
@@ -112,7 +118,7 @@ bold='\033[1;37m'
 reset='\033[0m'
 
 yyyymmdd=$(date '+%Y%m%d')
-alias brewcheck='echo "${blueBreaker} ${bold}Cleaning up brewfiles${reset}"; brew cleanup --prune=3; echo "${blueBreaker} ${bold}Running brew autoremove${reset}"; brew autoremove; echo "${blueBreaker} ${bold}Checking for updates${reset}"; brew update; echo "${blueBreaker} ${bold}Upgrading casks/formulas automatically${reset}"; brew upgrade; echo "${blueBreaker} ${bold}Checking for outdated App Store applications${reset}"; mas outdated; echo "${blueBreaker} ${bold}The following outdated casks/formulas must be updated manually${reset}"; brew outdated --greedy-auto-updates --verbose;'
+alias brewcheck='echo "${blueBreaker} ${bold}Cleaning up brewfiles${reset}"; brew cleanup --prune=3; echo "${blueBreaker} ${bold}Updating Oh My Zsh${reset}"; omz update; echo "${blueBreaker} ${bold}Running brew autoremove${reset}"; brew autoremove; echo "${blueBreaker} ${bold}Checking for updates${reset}"; brew update; echo "${blueBreaker} ${bold}Upgrading casks/formulas automatically${reset}"; brew upgrade; echo "${blueBreaker} ${bold}Checking for outdated App Store applications${reset}"; mas outdated; echo "${blueBreaker} ${bold}The following outdated casks/formulas must be updated manually${reset}"; brew outdated --greedy-auto-updates --verbose;'
 alias brewcheckgreedy='echo "${blueBreaker} ${bold}Cleaning up brewfiles${reset}"; brew cleanup --prune=3; echo "${blueBreaker} ${bold}Running brew autoremove${reset}"; brew autoremove; echo "${blueBreaker} ${bold}Checking for updates${reset}"; brew update; echo "${blueBreaker} ${bold}Upgrading casks/formulas automatically${reset}"; brew upgrade; echo "${blueBreaker} ${bold}Checking for outdated App Store applications${reset}"; mas outdated; echo "${blueBreaker} ${bold}The following outdated casks/formulas must be updated manually${reset}"; brew outdated --greedy --verbose;'
 alias brewupgrade='brew outdated --greedy --verbose | grep -v "(latest)" | sed -E "s|[^A-z0-9-]\(.*\).*||" | xargs brew upgrade'
 

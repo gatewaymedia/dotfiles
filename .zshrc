@@ -125,6 +125,7 @@ alias brewupgrade='brew outdated --greedy --verbose | grep -v "(latest)" | sed -
 alias home='cd; clear;'
 
 export HOMEBREW_OPEN_AFTER_INSTALL=1
+export HOMEBREW_INSTALL_BADGE=🤖
 
 curlfollow() { curl -sLI "$1" | grep -i Location; }
 curlcontent() { curl -sLI "$1" | grep -i content-disposition; }

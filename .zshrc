@@ -105,12 +105,21 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-oa() {
- open "/Applications/$1.app"
+quiet_which() {
+  command -v "$1" >/dev/null
 }
 
-alias yta='yt-dlp -i -x -f bestaudio --audio-format "mp3" --audio-quality 0'
-alias ytv='yt-dlp -f "bestvideo[ext=mp4][height=1080]+bestaudio[ext=m4a][acodec*=mp4a]" --recode-video "mp4"'
+oa() {
+  for app in "$@"; do
+    open /Applications/"$app".app
+  done
+}
+
+if quiet_which yt-dlp
+then
+ alias yta='yt-dlp -i -x -f bestaudio --audio-format "mp3" --audio-quality 0'
+ alias ytv='yt-dlp --recode-video "mp4"'
+fi
 
 # Set color variables
 blueBreaker='\n\033[48;2;0;51;100m\033[38;22;255;255;255m\033[1;37m ==> \033[0m'

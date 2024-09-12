@@ -139,5 +139,61 @@ export HOMEBREW_INSTALL_BADGE=🤖
 curlfollow() { curl -sLI "$1" | grep -i Location; }
 curlcontent() { curl -sLI "$1" | grep -i content-disposition; }
 
+function cleanup_old_formulae() {
+  # Check if the first argument is "--debug"
+  debug_mode=false
+  if [ "$1" = "--debug" ]; then
+    debug_mode=true
+  fi
+
+  # List installed brew formulas
+  installed_formulas=$(brew ls --formula)
+
+  # Check if none of the required formulas are installed and exit early if so
+  if ! echo "$installed_formulas" | grep -q -e "yt-dlp" -e "mas" -e "ffmpeg"; then
+    if [ "$debug_mode" = true ]; then
+      echo "None of yt-dlp, mas, or ffmpeg are installed. Exiting."
+    fi
+    return
+  fi
+
+  # Get macOS version
+  macos_version=$(sw_vers -productVersion)
+  
+  # Extract the major version and minor version
+  major_version=$(echo "$macos_version" | cut -d '.' -f 1)
+  
+  # Check if macOS version is Monterey (12.x) or older
+  if [ "$major_version" -eq 12 ] || [ "$major_version" -lt 12 ]; then
+    echo "Running on macOS Monterey or older: $macos_version"
+    
+    # List installed brew formulas
+    installed_formulas=$(brew ls --formula)
+
+    # Uninstall yt-dlp if installed
+    if echo "$installed_formulas" | grep -q "yt-dlp"; then
+      echo "yt-dlp is installed. Uninstalling..."
+      brew uninstall yt-dlp
+    fi
+
+    # Uninstall mas if installed
+    if echo "$installed_formulas" | grep -q "mas"; then
+      echo "mas is installed. Uninstalling..."
+      brew uninstall mas
+    fi
+
+    # Uninstall ffmpeg if installed
+    if echo "$installed_formulas" | grep -q "ffmpeg"; then
+      echo "ffmpeg is installed. Uninstalling..."
+      brew uninstall ffmpeg
+    fi
+  else
+  # Only print the version message if debug mode is enabled
+    if [ "$debug_mode" = true ]; then
+      echo "Not running on macOS Ventura or older. Current version: $macos_version"
+    fi
+  fi
+}
+
 export PATH="/usr/local/sbin:$PATH"
 

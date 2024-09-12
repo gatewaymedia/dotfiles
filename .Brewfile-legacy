@@ -1,6 +1,6 @@
 tap "bevanjkay/formulae"
 tap "bevanjkay/tap"
-brew "bevanjkay/tap/mas-legacy"
+brew "bevanjkay/formulae/mas-legacy"
 cask "bevanjkay/tap/ffmpeg-static"
 cask "gatewaymedia/tap/yt-dlp-binary"
 cask "bevanjkay/tap/zsh-autosuggestions"

@@ -127,8 +127,8 @@ bold='\033[1;37m'
 reset='\033[0m'
 
 yyyymmdd=$(date '+%Y%m%d')
-alias brewcheck='echo "${blueBreaker} ${bold}Cleaning up brewfiles${reset}"; brew cleanup --prune=3; echo "${blueBreaker} ${bold}Updating Oh My Zsh${reset}"; omz update --unattended; echo "${blueBreaker} ${bold}Running brew autoremove${reset}"; brew autoremove; echo "${blueBreaker} ${bold}Checking for updates${reset}"; brew update; echo "${blueBreaker} ${bold}Checking Brewfile${reset}"; brew bundle install --global --no-upgrade; echo "${blueBreaker} ${bold}Upgrading casks/formulas automatically${reset}"; brew upgrade; echo "${blueBreaker} ${bold}Checking for outdated App Store applications${reset}"; mas outdated; echo "${blueBreaker} ${bold}The following outdated casks/formulas must be updated manually${reset}"; brew outdated --greedy-auto-updates --verbose;'
-alias brewcheckgreedy='echo "${blueBreaker} ${bold}Cleaning up brewfiles${reset}"; brew cleanup --prune=3; echo "${blueBreaker} ${bold}Running brew autoremove${reset}"; brew autoremove; echo "${blueBreaker} ${bold}Checking for updates${reset}"; brew update; echo "${blueBreaker} ${bold}Upgrading casks/formulas automatically${reset}"; brew upgrade; echo "${blueBreaker} ${bold}Checking for outdated App Store applications${reset}"; mas outdated; echo "${blueBreaker} ${bold}The following outdated casks/formulas must be updated manually${reset}"; brew outdated --greedy --verbose;'
+alias brewcheck='echo "${blueBreaker} ${bold}Cleaning up brewfiles${reset}"; brew cleanup --prune=3; echo "${blueBreaker} ${bold}Updating Oh My Zsh${reset}"; omz update --unattended; echo "${blueBreaker} ${bold}Running brew autoremove${reset}"; brew autoremove; echo "${blueBreaker} ${bold}Checking for updates${reset}"; brew update; echo "${blueBreaker} ${bold}Checking Brewfile${reset}"; brew bundle install --global --no-upgrade; echo "${blueBreaker} ${bold}Upgrading casks/formulas automatically${reset}"; bupoutdated; echo "${blueBreaker} ${bold}Checking for outdated App Store applications${reset}"; mas outdated; echo "${blueBreaker} ${bold}The following outdated casks/formulas must be updated manually${reset}"; brew outdated --greedy-auto-updates --verbose;'
+alias brewcheckgreedy='echo "${blueBreaker} ${bold}Cleaning up brewfiles${reset}"; brew cleanup --prune=3; echo "${blueBreaker} ${bold}Running brew autoremove${reset}"; brew autoremove; echo "${blueBreaker} ${bold}Checking for updates${reset}"; brew update; echo "${blueBreaker} ${bold}Upgrading casks/formulas automatically${reset}"; bupoutdated; echo "${blueBreaker} ${bold}Checking for outdated App Store applications${reset}"; mas outdated; echo "${blueBreaker} ${bold}The following outdated casks/formulas must be updated manually${reset}"; brew outdated --greedy --verbose;'
 alias brewupgrade='brew outdated --greedy --verbose | grep -v "(latest)" | sed -E "s|[^A-z0-9-]\(.*\).*||" | xargs brew upgrade'
 
 alias home='cd; clear;'
@@ -193,6 +193,98 @@ function cleanup_old_formulae() {
       echo "Not running on macOS Ventura or older. Current version: $macos_version"
     fi
   fi
+}
+
+bup() {
+  # Default concurrency level
+  local concurrency=5
+  
+  # If the first argument is a number, use it as concurrency and shift the arguments
+  if [[ $1 =~ ^[0-9]+$ ]]; then
+    concurrency=$1
+    shift
+  fi
+  
+  # If no casks are provided, print a usage message
+  if [[ $# -eq 0 ]]; then
+    echo "Usage: bup [concurrency] input1 input2 ..."
+    return 1
+  fi
+  
+  # Fetch with specified concurrency
+  echo "Fetching with concurrency level: $concurrency"
+  brew fetch --concurrency=$concurrency "$@"
+  
+  # Upgrade the provided casks
+  echo "Upgrading: $@"
+  brew upgrade "$@"
+}
+
+bupall() {
+  # Check if jq is installed
+  if ! command -v jq > /dev/null 2>&1; then
+    echo "Error: jq is not installed. Please install jq to proceed."
+    return 1
+  fi
+
+  # Default concurrency level
+  local concurrency=5
+
+  # If the first argument is a number, use it as concurrency and shift the arguments
+  if [[ $1 =~ ^[0-9]+$ ]]; then
+    concurrency=$1
+    shift
+  fi
+
+  # Get the list of outdated casks in JSON format and extract the names using jq
+  local outdated_casks
+  outdated_casks=($(brew outdated --cask --greedy-auto-updates --json | jq -r '.casks[].name'))
+
+  # Check if there are no outdated casks
+  if [[ ${#outdated_casks[@]} -eq 0 ]]; then
+    echo "No outdated casks found."
+    return 0
+  fi
+
+  # Run the bup function with the concurrency and pass the outdated casks as separate arguments
+  echo "Running bup with outdated casks: ${outdated_casks[*]}"
+  bup $concurrency "${outdated_casks[@]}"
+}
+
+bupoutdated() {
+  # Check if jq is installed
+  if ! command -v jq > /dev/null 2>&1; then
+    echo "Error: jq is not installed. Please install jq to proceed."
+    return 1
+  fi
+
+  # Default concurrency level
+  local concurrency=5
+
+  # If the first argument is a number, use it as concurrency and shift the arguments
+  if [[ $1 =~ ^[0-9]+$ ]]; then
+    concurrency=$1
+    shift
+  fi
+
+  # Get the list of outdated casks in JSON format and extract the names using jq
+  local outdated_casks
+  local outdated_formulae
+  outdated_casks=($(brew outdated --json | jq -r '.casks[].name'))
+  outdated_formulae=($(brew outdated --json | jq -r '.formulae[].name'))
+
+  # join the arrays into a single array
+  outdated=("${outdated_casks[@]}" "${outdated_formulae[@]}")
+
+  # Check if there are no outdated casks
+  if [[ ${#outdated[@]} -eq 0 ]]; then
+    echo "No outdated packages found."
+    return 0
+  fi
+
+  # Run the bup function with the concurrency and pass the outdated casks as separate arguments
+  echo "Running bup with outdated packages: ${outdated[@]}"
+  bup $concurrency "${outdated[@]}"
 }
 
 export PATH="/usr/local/sbin:$PATH"

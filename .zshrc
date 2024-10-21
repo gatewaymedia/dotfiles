@@ -229,6 +229,7 @@ bupall() {
 
   # Default concurrency level
   local concurrency=5
+  local except_list=()
 
   # If the first argument is a number, use it as concurrency and shift the arguments
   if [[ $1 =~ ^[0-9]+$ ]]; then
@@ -236,9 +237,32 @@ bupall() {
     shift
   fi
 
+  # Check for --except flag and capture the arguments
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      --except)
+        shift
+        while [[ $# -gt 0 && $1 != --* ]]; do
+          except_list+=("$1")
+          shift
+        done
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+
   # Get the list of outdated casks in JSON format and extract the names using jq
   local outdated_casks
   outdated_casks=($(brew outdated --cask --greedy-auto-updates --json | jq -r '.casks[].name'))
+
+  # Filter out the casks in the except list
+  for except in "${except_list[@]}"; do
+    outdated_casks=("${outdated_casks[@]/$except}")
+  done
+
+  outdated_casks=($(echo "${outdated_casks[@]}" | tr ' ' '\n' | grep -v '^$'))
 
   # Check if there are no outdated casks
   if [[ ${#outdated_casks[@]} -eq 0 ]]; then
@@ -247,7 +271,7 @@ bupall() {
   fi
 
   # Run the bup function with the concurrency and pass the outdated casks as separate arguments
-  echo "Running bup with outdated casks: ${outdated_casks[*]}"
+  echo "Running bup with outdated casks: ${outdated_casks[@]}"
   bup $concurrency "${outdated_casks[@]}"
 }
 

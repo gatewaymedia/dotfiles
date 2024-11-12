@@ -23,4 +23,4 @@ cask "ndi-core-suite"
 cask "propresenter"
 cask "pro7-media-sweeper"
 cask "spotify", args: { no_quarantine: true }
-mas "Amphetamine", id: "937984704"
+mas "Amphetamine", id: 937984704

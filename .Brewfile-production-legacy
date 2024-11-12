@@ -1,11 +1,26 @@
+# Base legacy
 tap "bevanjkay/formulae"
 tap "bevanjkay/tap"
-cask "bevanjkay/tap/ffmpeg-static"
 cask "bevanjkay/tap/jq-static"
 cask "bevanjkay/tap/mas-static"
-cask "gatewaymedia/tap/yt-dlp-binary"
 cask "bevanjkay/tap/zsh-autosuggestions"
 cask "bevanjkay/tap/zsh-syntax-highlighting"
 cask "font-sf-mono"
+cask "google-chrome"
 cask "hyper"
-cask "stats"
+cask "stats", { args: no_quarantine }
+cask "rectangle"
+
+# Production
+cask "bevanjkay/tap/ffmpeg-static"
+cask "bevanjkay/tap/yt-dlp-static"
+cask "bmd-atem"
+cask "bmd-videohub"
+cask "dante-controller"
+cask "dropbox"
+cask "gld-editor"
+cask "ndi-core-suite"
+cask "propresenter"
+cask "pro7-media-sweeper"
+cask "spotify", args: { no_quarantine: true }
+mas "Amphetamine", id: "937984704"

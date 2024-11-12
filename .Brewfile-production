@@ -1,6 +1,7 @@
 # Base
 tap "bevanjkay/formulae"
 tap "bevanjkay/tap"
+brew "jq"
 brew "mas"
 cask "bevanjkay/tap/zsh-autosuggestions"
 cask "bevanjkay/tap/zsh-syntax-highlighting"

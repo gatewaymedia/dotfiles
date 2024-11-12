@@ -1,6 +1,6 @@
 tap "bevanjkay/formulae"
 tap "bevanjkay/tap"
-brew "mas"
+brew "bevanjkay/tap/mas-static"
 cask "bevanjkay/tap/zsh-autosuggestions"
 cask "bevanjkay/tap/zsh-syntax-highlighting"
 cask "font-sf-mono"

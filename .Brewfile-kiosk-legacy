@@ -1,4 +1,4 @@
-# Base
+# Base legacy
 tap "bevanjkay/formulae"
 tap "bevanjkay/tap"
 cask "bevanjkay/tap/mas-static"

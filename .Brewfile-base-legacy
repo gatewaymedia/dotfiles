@@ -8,5 +8,5 @@ cask "bevanjkay/tap/zsh-syntax-highlighting"
 cask "font-sf-mono"
 cask "google-chrome"
 cask "hyper"
-cask "stats", { args: no_quarantine }
+cask "stats", args: { no_quarantine: true }
 cask "rectangle"

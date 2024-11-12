@@ -1,10 +1,12 @@
 # Base legacy
 tap "bevanjkay/formulae"
 tap "bevanjkay/tap"
+cask "bevanjkay/tap/jq-static"
 cask "bevanjkay/tap/mas-static"
 cask "bevanjkay/tap/zsh-autosuggestions"
 cask "bevanjkay/tap/zsh-syntax-highlighting"
 cask "font-sf-mono"
 cask "google-chrome"
 cask "hyper"
-cask "stats"
+cask "stats", { args: no_quarantine }
+cask "rectangle"

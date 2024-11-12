@@ -1,13 +1,15 @@
 # Base
 tap "bevanjkay/formulae"
 tap "bevanjkay/tap"
+brew "jq"
 brew "mas"
 cask "bevanjkay/tap/zsh-autosuggestions"
 cask "bevanjkay/tap/zsh-syntax-highlighting"
 cask "font-sf-mono"
 cask "google-chrome"
 cask "hyper"
-cask "stats"
+cask "stats", args: { no_quarantine: true }
+cask "rectangle"
 
 # Kiosk
 cask "bevanjkay/tap/kiosk-browser"

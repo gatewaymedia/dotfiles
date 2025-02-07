@@ -313,3 +313,6 @@ bupoutdated() {
 
 export PATH="/usr/local/sbin:$PATH"
 
+if [ -d "/opt/workbrew" ]; then
+  eval $(/opt/workbrew/bin/brew shellenv)
+fi

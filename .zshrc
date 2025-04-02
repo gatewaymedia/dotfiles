@@ -136,6 +136,9 @@ alias home='cd; clear;'
 export HOMEBREW_OPEN_AFTER_INSTALL=1
 export HOMEBREW_INSTALL_BADGE=🤖
 
+# Set the number of concurrent fetches when using brew
+FETCH_CONCURRENCY=8
+
 curlfollow() { curl -sLI "$1" | grep -i Location; }
 curlcontent() { curl -sLI "$1" | grep -i content-disposition; }
 
@@ -147,10 +150,10 @@ function cleanup_old_formulae() {
   fi
 
   # List installed brew formulas
-  installed_formulas=$(brew ls --formula)
+  installed_formulae=$(brew ls --formula)
 
   # Check if none of the required formulas are installed and exit early if so
-  if ! echo "$installed_formulas" | grep -q -e "yt-dlp" -e "mas" -e "ffmpeg"; then
+  if ! echo "$installed_formulae" | grep -q -e "yt-dlp" -e "mas" -e "ffmpeg"; then
     if [ "$debug_mode" = true ]; then
       echo "None of yt-dlp, mas, or ffmpeg are installed. Exiting."
     fi
@@ -168,22 +171,22 @@ function cleanup_old_formulae() {
     echo "Running on macOS Monterey or older: $macos_version"
     
     # List installed brew formulas
-    installed_formulas=$(brew ls --formula)
+    installed_formulae=$(brew ls --formula)
 
     # Uninstall yt-dlp if installed
-    if echo "$installed_formulas" | grep -q "yt-dlp"; then
+    if echo "$installed_formulae" | grep -q "yt-dlp"; then
       echo "yt-dlp is installed. Uninstalling..."
       brew uninstall yt-dlp
     fi
 
     # Uninstall mas if installed
-    if echo "$installed_formulas" | grep -q "mas"; then
+    if echo "$installed_formulae" | grep -q "mas"; then
       echo "mas is installed. Uninstalling..."
       brew uninstall mas
     fi
 
     # Uninstall ffmpeg if installed
-    if echo "$installed_formulas" | grep -q "ffmpeg"; then
+    if echo "$installed_formulae" | grep -q "ffmpeg"; then
       echo "ffmpeg is installed. Uninstalling..."
       brew uninstall ffmpeg
     fi
@@ -196,12 +199,9 @@ function cleanup_old_formulae() {
 }
 
 bup() {
-  # Default concurrency level
-  local concurrency=5
-  
   # If the first argument is a number, use it as concurrency and shift the arguments
   if [[ $1 =~ ^[0-9]+$ ]]; then
-    concurrency=$1
+    FETCH_CONCURRENCY=$1
     shift
   fi
   
@@ -212,8 +212,8 @@ bup() {
   fi
   
   # Fetch with specified concurrency
-  echo "Fetching with concurrency level: $concurrency"
-  brew fetch --concurrency=$concurrency "$@"
+  echo "Fetching with concurrency level: $FETCH_CONCURRENCY"
+  brew fetch --concurrency=$FETCH_CONCURRENCY "$@"
   
   # Upgrade the provided casks
   echo "Upgrading: $@"
@@ -228,12 +228,11 @@ bupall() {
   fi
 
   # Default concurrency level
-  local concurrency=5
   local except_list=()
 
   # If the first argument is a number, use it as concurrency and shift the arguments
   if [[ $1 =~ ^[0-9]+$ ]]; then
-    concurrency=$1
+    FETCH_CONCURRENCY=$1
     shift
   fi
 
@@ -272,7 +271,7 @@ bupall() {
 
   # Run the bup function with the concurrency and pass the outdated casks as separate arguments
   echo "Running bup with outdated casks: ${outdated_casks[@]}"
-  bup $concurrency "${outdated_casks[@]}"
+  bup $FETCH_CONCURRENCY "${outdated_casks[@]}"
 }
 
 bupoutdated() {
@@ -282,12 +281,9 @@ bupoutdated() {
     return 1
   fi
 
-  # Default concurrency level
-  local concurrency=5
-
   # If the first argument is a number, use it as concurrency and shift the arguments
   if [[ $1 =~ ^[0-9]+$ ]]; then
-    concurrency=$1
+    FETCH_CONCURRENCY=$1
     shift
   fi
 
@@ -308,7 +304,7 @@ bupoutdated() {
 
   # Run the bup function with the concurrency and pass the outdated casks as separate arguments
   echo "Running bup with outdated packages: ${outdated[@]}"
-  bup $concurrency "${outdated[@]}"
+  bup $FETCH_CONCURRENCY "${outdated[@]}"
 }
 
 export PATH="/usr/local/sbin:$PATH"

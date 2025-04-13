@@ -19,7 +19,7 @@ cask "bmd-videohub"
 cask "dante-controller"
 cask "dropbox"
 cask "gld-editor"
-cask "ndi-core-suite"
+cask "ndi-tools"
 cask "propresenter"
 cask "pro7-media-sweeper"
 cask "spotify", args: { no_quarantine: true }

@@ -135,9 +135,7 @@ alias home='cd; clear;'
 
 export HOMEBREW_OPEN_AFTER_INSTALL=1
 export HOMEBREW_INSTALL_BADGE=🤖
-
-# Set the number of concurrent fetches when using brew
-FETCH_CONCURRENCY=8
+export HOMEBREW_DOWNLOAD_CONCURRENCY=8
 
 curlfollow() { curl -sLI "$1" | grep -i Location; }
 curlcontent() { curl -sLI "$1" | grep -i content-disposition; }
@@ -199,21 +197,15 @@ function cleanup_old_formulae() {
 }
 
 bup() {
-  # If the first argument is a number, use it as concurrency and shift the arguments
-  if [[ $1 =~ ^[0-9]+$ ]]; then
-    FETCH_CONCURRENCY=$1
-    shift
-  fi
-  
+ 
   # If no casks are provided, print a usage message
   if [[ $# -eq 0 ]]; then
-    echo "Usage: bup [concurrency] input1 input2 ..."
+    echo "Usage: bup input1 input2 ..."
     return 1
   fi
   
   # Fetch with specified concurrency
-  echo "Fetching with concurrency level: $FETCH_CONCURRENCY"
-  brew fetch --concurrency=$FETCH_CONCURRENCY "$@"
+  brew fetch "$@"
   
   # Upgrade the provided casks
   echo "Upgrading: $@"
@@ -229,12 +221,6 @@ bupall() {
 
   # Default concurrency level
   local except_list=()
-
-  # If the first argument is a number, use it as concurrency and shift the arguments
-  if [[ $1 =~ ^[0-9]+$ ]]; then
-    FETCH_CONCURRENCY=$1
-    shift
-  fi
 
   # Check for --except flag and capture the arguments
   while [[ $# -gt 0 ]]; do
@@ -271,7 +257,7 @@ bupall() {
 
   # Run the bup function with the concurrency and pass the outdated casks as separate arguments
   echo "Running bup with outdated casks: ${outdated_casks[@]}"
-  bup $FETCH_CONCURRENCY "${outdated_casks[@]}"
+  bup "${outdated_casks[@]}"
 }
 
 bupoutdated() {
@@ -279,12 +265,6 @@ bupoutdated() {
   if ! command -v jq > /dev/null 2>&1; then
     echo "Error: jq is not installed. Please install jq to proceed."
     return 1
-  fi
-
-  # If the first argument is a number, use it as concurrency and shift the arguments
-  if [[ $1 =~ ^[0-9]+$ ]]; then
-    FETCH_CONCURRENCY=$1
-    shift
   fi
 
   # Get the list of outdated casks in JSON format and extract the names using jq
@@ -304,7 +284,7 @@ bupoutdated() {
 
   # Run the bup function with the concurrency and pass the outdated casks as separate arguments
   echo "Running bup with outdated packages: ${outdated[@]}"
-  bup $FETCH_CONCURRENCY "${outdated[@]}"
+  bup "${outdated[@]}"
 }
 
 export PATH="/usr/local/sbin:$PATH"

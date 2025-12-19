@@ -12,5 +12,6 @@ cask "stats", args: { no_quarantine: true }, greedy: true
 cask "rectangle"
 
 # Kiosk
+cask "gatewaymedia/tap/gateway-community-hub"
 cask "bevanjkay/tap/kiosk-browser"
 cask "gatewaymedia/tap/kiosk-browser-settings"

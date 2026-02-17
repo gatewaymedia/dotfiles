@@ -9,7 +9,21 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@04a6d8cfe9d251e2afb78c5bdc6274ec9642aea2 # master
+        with:
+          core: false
+          cask: false
+          test-bot: false
+
+      - uses: Homebrew/actions/cache-homebrew-prefix@04a6d8cfe9d251e2afb78c5bdc6274ec9642aea2 # main
+        with:
+          install: zsh
+          uninstall: true
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Syntax check Brewfiles (ruby -c)
         run: |

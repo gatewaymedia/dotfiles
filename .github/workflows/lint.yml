@@ -1,0 +1,28 @@
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Syntax check Brewfiles (ruby -c)
+        run: |
+          ruby -c .Brewfile-base
+          ruby -c .Brewfile-kiosk
+          ruby -c .Brewfile-production
+
+      - name: Syntax check .zshrc (zsh -n)
+        run: zsh -n .zshrc
+
+      - name: Syntax check config.sh (bash -n)
+        run: bash -n config.sh
+
+      - name: Syntax check .hyper.js (node -c)
+        run: node -c .hyper.js
+

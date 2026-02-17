@@ -1,9 +1,17 @@
 # Base
 tap "bevanjkay/formulae"
 tap "bevanjkay/tap"
-brew "jq"
-brew "mas"
-brew "mole"
+
+if OS.not_tier_one_configuration?
+  cask "bevanjkay/tap/jq-static"
+  cask "bevanjkay/tap/mas-static"
+  cask "bevanjkay/tap/mole-static"
+else
+  brew "jq"
+  brew "mas"
+  brew "mole"
+end
+
 cask "bevanjkay/tap/zsh-autosuggestions-static"
 cask "bevanjkay/tap/zsh-syntax-highlighting-static"
 cask "font-sf-mono"

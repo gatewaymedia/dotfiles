@@ -1,28 +1,5 @@
-def cask_installed?(name)
-  system("brew list --cask #{name} >/dev/null 2>&1")
-end
-
 # Base
-tap "bevanjkay/formulae"
-tap "bevanjkay/tap"
-
-if OS.not_tier_one_configuration?
-  cask "bevanjkay/tap/jq-static"
-  cask "bevanjkay/tap/mas-static"
-  cask "bevanjkay/tap/mole-static"
-else
-  brew "jq"
-  brew "mas"
-  brew "mole"
-end
-
-cask "bevanjkay/tap/zsh-autosuggestions-static"
-cask "bevanjkay/tap/zsh-syntax-highlighting-static"
-cask "font-sf-mono"
-cask "google-chrome"
-cask "hyper"
-cask "stats", args: { no_quarantine: true }, greedy: true
-cask "rectangle"
+instance_eval(File.read(File.join(__dir__, ".Brewfile-base")))
 
 # Production
 if OS.not_tier_one_configuration?

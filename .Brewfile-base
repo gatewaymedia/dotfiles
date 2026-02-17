@@ -1,3 +1,7 @@
+def cask_installed?(name)
+  system("#{HOMEBREW_PREFIX}/bin/brew list --cask #{name} >/dev/null 2>&1")
+end
+
 puts "==> Not tier one configuration detected. Installing static binaries for some tools." if OS.not_tier_one_configuration?
 
 # Base

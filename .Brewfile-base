@@ -1,3 +1,5 @@
+puts "==> Not tier one configuration detected. Installing static binaries for some tools." if OS.not_tier_one_configuration?
+
 # Base
 tap "bevanjkay/formulae"
 tap "bevanjkay/tap"

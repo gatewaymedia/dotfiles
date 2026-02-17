@@ -1,9 +1,17 @@
 # Base
 tap "bevanjkay/formulae"
 tap "bevanjkay/tap"
-brew "jq"
-brew "mas"
-brew "mole"
+
+if OS.not_tier_one_configuration?
+  cask "bevanjkay/tap/jq-static"
+  cask "bevanjkay/tap/mas-static"
+  cask "bevanjkay/tap/mole-static"
+else
+  brew "jq"
+  brew "mas"
+  brew "mole"
+end
+
 cask "bevanjkay/tap/zsh-autosuggestions-static"
 cask "bevanjkay/tap/zsh-syntax-highlighting-static"
 cask "font-sf-mono"
@@ -13,9 +21,15 @@ cask "stats", args: { no_quarantine: true }, greedy: true
 cask "rectangle"
 
 # Production
-brew "ffmpeg"
-brew "imagemagick"
-brew "yt-dlp"
+if OS.not_tier_one_configuration?
+  cask "bevanjkay/tap/ffmpeg-static"
+  cask "bevanjkay/tap/yt-dlp-static"
+else
+  brew "ffmpeg"
+  brew "imagemagick"
+  brew "yt-dlp"
+end
+
 cask "bmd-atem"
 cask "bmd-videohub"
 cask "dante-controller"

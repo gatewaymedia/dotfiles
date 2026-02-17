@@ -1,3 +1,7 @@
+def cask_installed?(name)
+  system("brew list --cask #{name} >/dev/null 2>&1")
+end
+
 # Base
 tap "bevanjkay/formulae"
 tap "bevanjkay/tap"
@@ -35,7 +39,7 @@ cask "bmd-videohub"
 cask "dante-controller"
 cask "dropbox"
 cask "ndi-tools"
-cask "propresenter"
+cask "propresenter" unless cask_installed?("propresenter@beta")
 cask "pro7-media-sweeper"
 cask "spotify", args: { no_quarantine: true }
 mas "Amphetamine", id: 937984704

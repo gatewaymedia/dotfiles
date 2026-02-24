@@ -11,6 +11,7 @@ else
   brew "yt-dlp"
 end
 
+cask "gateway-brewfile-production", greedy: true
 cask "bmd-atem"
 cask "bmd-videohub"
 cask "dante-controller"

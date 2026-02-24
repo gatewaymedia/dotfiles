@@ -207,7 +207,7 @@ if quiet_which brew; then
 		fi
 
 		# Fetch with specified concurrency
-		brew fetch "$@"
+		# brew fetch "$@"
 
 		# Upgrade the provided casks
 		echo "Upgrading: $@"

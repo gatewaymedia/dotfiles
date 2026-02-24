@@ -78,7 +78,6 @@ zstyle ':omz:update' mode disabled
 
 source $ZSH/oh-my-zsh.sh
 
-
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -106,19 +105,18 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 quiet_which() {
-  command -v "$1" >/dev/null
+	command -v "$1" >/dev/null
 }
 
 oa() {
-  for app in "$@"; do
-    open /Applications/"$app".app
-  done
+	for app in "$@"; do
+		open /Applications/"$app".app
+	done
 }
 
-if quiet_which yt-dlp
-then
- alias yta='yt-dlp -i -x -f bestaudio --audio-format "mp3" --audio-quality 0'
- alias ytv='yt-dlp --recode-video "mp4"'
+if quiet_which yt-dlp; then
+	alias yta='yt-dlp -i -x -f bestaudio --audio-format "mp3" --audio-quality 0'
+	alias ytv='yt-dlp --recode-video "mp4"'
 fi
 
 # Set color variables
@@ -127,168 +125,167 @@ bold='\033[1;37m'
 reset='\033[0m'
 
 yyyymmdd=$(date '+%Y%m%d')
-alias brewcheck='echo "${blueBreaker} ${bold}Cleaning up brewfiles${reset}"; brew cleanup --prune=3; echo "${blueBreaker} ${bold}Updating Oh My Zsh${reset}"; $ZSH/tools/upgrade.sh -v minimal; echo "${blueBreaker} ${bold}Running brew autoremove${reset}"; brew autoremove; echo "${blueBreaker} ${bold}Checking for updates${reset}"; brew update; echo "${blueBreaker} ${bold}Checking Brewfile${reset}"; brew bundle install --global; echo "${blueBreaker} ${bold}Upgrading casks/formulas automatically${reset}"; bupoutdated; echo "${blueBreaker} ${bold}Checking for outdated App Store applications${reset}"; mas outdated; echo "${blueBreaker} ${bold}The following outdated casks/formulas must be updated manually${reset}"; brew outdated --greedy-auto-updates --verbose;'
-alias brewcheckgreedy='echo "${blueBreaker} ${bold}Cleaning up brewfiles${reset}"; brew cleanup --prune=3; echo "${blueBreaker} ${bold}Running brew autoremove${reset}"; brew autoremove; echo "${blueBreaker} ${bold}Checking for updates${reset}"; brew update; echo "${blueBreaker} ${bold}Upgrading casks/formulas automatically${reset}"; bupoutdated; echo "${blueBreaker} ${bold}Checking for outdated App Store applications${reset}"; mas outdated; echo "${blueBreaker} ${bold}The following outdated casks/formulas must be updated manually${reset}"; brew outdated --greedy --verbose;'
-alias brewupgrade='brew outdated --greedy --verbose | grep -v "(latest)" | sed -E "s|[^A-z0-9-]\(.*\).*||" | xargs brew upgrade'
-
-alias home='cd; clear;'
-
-export HOMEBREW_OPEN_AFTER_INSTALL=1
-export HOMEBREW_INSTALL_BADGE=🤖
-export HOMEBREW_DOWNLOAD_CONCURRENCY=8
 
 curlfollow() { curl -sLI "$1" | grep -i Location; }
 curlcontent() { curl -sLI "$1" | grep -i content-disposition; }
+alias home='cd; clear;'
 
-function cleanup_old_formulae() {
-  # Check if the first argument is "--debug"
-  debug_mode=false
-  if [ "$1" = "--debug" ]; then
-    debug_mode=true
-  fi
+if quiet_which brew; then
 
-  # List installed brew formulas
-  installed_formulae=$(brew ls --formula)
+	eval "$(brew shellenv)"
 
-  # Check if none of the required formulas are installed and exit early if so
-  if ! echo "$installed_formulae" | grep -q -e "yt-dlp" -e "mas" -e "ffmpeg"; then
-    if [ "$debug_mode" = true ]; then
-      echo "None of yt-dlp, mas, or ffmpeg are installed. Exiting."
-    fi
-    return
-  fi
+	alias brewcheck='echo "${blueBreaker} ${bold}Cleaning up brewfiles${reset}"; brew cleanup --prune=3; echo "${blueBreaker} ${bold}Updating Oh My Zsh${reset}"; $ZSH/tools/upgrade.sh -v minimal; echo "${blueBreaker} ${bold}Running brew autoremove${reset}"; brew autoremove; echo "${blueBreaker} ${bold}Checking for updates${reset}"; brew update; echo "${blueBreaker} ${bold}Checking Brewfile${reset}"; brew bundle install --global; echo "${blueBreaker} ${bold}Upgrading casks/formulas automatically${reset}"; bupoutdated; echo "${blueBreaker} ${bold}Checking for outdated App Store applications${reset}"; mas outdated; echo "${blueBreaker} ${bold}The following outdated casks/formulas must be updated manually${reset}"; brew outdated --greedy-auto-updates --verbose;'
+	alias brewcheckgreedy='echo "${blueBreaker} ${bold}Cleaning up brewfiles${reset}"; brew cleanup --prune=3; echo "${blueBreaker} ${bold}Running brew autoremove${reset}"; brew autoremove; echo "${blueBreaker} ${bold}Checking for updates${reset}"; brew update; echo "${blueBreaker} ${bold}Upgrading casks/formulas automatically${reset}"; bupoutdated; echo "${blueBreaker} ${bold}Checking for outdated App Store applications${reset}"; mas outdated; echo "${blueBreaker} ${bold}The following outdated casks/formulas must be updated manually${reset}"; brew outdated --greedy --verbose;'
+	alias brewupgrade='brew outdated --greedy --verbose | grep -v "(latest)" | sed -E "s|[^A-z0-9-]\(.*\).*||" | xargs brew upgrade'
 
-  # Get macOS version
-  macos_version=$(sw_vers -productVersion)
-  
-  # Extract the major version and minor version
-  major_version=$(echo "$macos_version" | cut -d '.' -f 1)
-  
-  # Check if macOS version is Monterey (12.x) or older
-  if [ "$major_version" -eq 12 ] || [ "$major_version" -lt 12 ]; then
-    echo "Running on macOS Monterey or older: $macos_version"
-    
-    # List installed brew formulas
-    installed_formulae=$(brew ls --formula)
+	export HOMEBREW_OPEN_AFTER_INSTALL=1
+	export HOMEBREW_INSTALL_BADGE=✅
+	export HOMEBREW_NO_ENV_HINTS=1
 
-    # Uninstall yt-dlp if installed
-    if echo "$installed_formulae" | grep -q "yt-dlp"; then
-      echo "yt-dlp is installed. Uninstalling..."
-      brew uninstall yt-dlp
-    fi
+	function cleanup_old_formulae() {
+		# Check if the first argument is "--debug"
+		debug_mode=false
+		if [ "$1" = "--debug" ]; then
+			debug_mode=true
+		fi
 
-    # Uninstall mas if installed
-    if echo "$installed_formulae" | grep -q "mas"; then
-      echo "mas is installed. Uninstalling..."
-      brew uninstall mas
-    fi
+		# List installed brew formulas
+		installed_formulae=$(brew ls --formula)
 
-    # Uninstall ffmpeg if installed
-    if echo "$installed_formulae" | grep -q "ffmpeg"; then
-      echo "ffmpeg is installed. Uninstalling..."
-      brew uninstall ffmpeg
-    fi
-  else
-  # Only print the version message if debug mode is enabled
-    if [ "$debug_mode" = true ]; then
-      echo "Not running on macOS Ventura or older. Current version: $macos_version"
-    fi
-  fi
-}
+		# Check if none of the required formulas are installed and exit early if so
+		if ! echo "$installed_formulae" | grep -q -e "yt-dlp" -e "mas" -e "ffmpeg"; then
+			if [ "$debug_mode" = true ]; then
+				echo "None of yt-dlp, mas, or ffmpeg are installed. Exiting."
+			fi
+			return
+		fi
 
-bup() {
- 
-  # If no casks are provided, print a usage message
-  if [[ $# -eq 0 ]]; then
-    echo "Usage: bup input1 input2 ..."
-    return 1
-  fi
-  
-  # Fetch with specified concurrency
-  brew fetch "$@"
-  
-  # Upgrade the provided casks
-  echo "Upgrading: $@"
-  brew upgrade "$@"
-}
+		# Get macOS version
+		macos_version=$(sw_vers -productVersion)
 
-bupall() {
-  # Check if jq is installed
-  if ! command -v jq > /dev/null 2>&1; then
-    echo "Error: jq is not installed. Please install jq to proceed."
-    return 1
-  fi
+		# Extract the major version and minor version
+		major_version=$(echo "$macos_version" | cut -d '.' -f 1)
 
-  # Default concurrency level
-  local except_list=()
+		# Check if macOS version is Monterey (12.x) or older
+		if [ "$major_version" -eq 12 ] || [ "$major_version" -lt 12 ]; then
+			echo "Running on macOS Monterey or older: $macos_version"
 
-  # Check for --except flag and capture the arguments
-  while [[ $# -gt 0 ]]; do
-    case $1 in
-      --except)
-        shift
-        while [[ $# -gt 0 && $1 != --* ]]; do
-          except_list+=("$1")
-          shift
-        done
-        ;;
-      *)
-        break
-        ;;
-    esac
-  done
+			# List installed brew formulas
+			installed_formulae=$(brew ls --formula)
 
-  # Get the list of outdated casks in JSON format and extract the names using jq
-  local outdated_casks
-  outdated_casks=($(brew outdated --cask --greedy-auto-updates --json | jq -r '.casks[].name'))
+			# Uninstall yt-dlp if installed
+			if echo "$installed_formulae" | grep -q "yt-dlp"; then
+				echo "yt-dlp is installed. Uninstalling..."
+				brew uninstall yt-dlp
+			fi
 
-  # Filter out the casks in the except list
-  for except in "${except_list[@]}"; do
-    outdated_casks=("${outdated_casks[@]/$except}")
-  done
+			# Uninstall mas if installed
+			if echo "$installed_formulae" | grep -q "mas"; then
+				echo "mas is installed. Uninstalling..."
+				brew uninstall mas
+			fi
 
-  outdated_casks=($(echo "${outdated_casks[@]}" | tr ' ' '\n' | grep -v '^$'))
+			# Uninstall ffmpeg if installed
+			if echo "$installed_formulae" | grep -q "ffmpeg"; then
+				echo "ffmpeg is installed. Uninstalling..."
+				brew uninstall ffmpeg
+			fi
+		else
+			# Only print the version message if debug mode is enabled
+			if [ "$debug_mode" = true ]; then
+				echo "Not running on macOS Ventura or older. Current version: $macos_version"
+			fi
+		fi
+	}
 
-  # Check if there are no outdated casks
-  if [[ ${#outdated_casks[@]} -eq 0 ]]; then
-    echo "No outdated casks found."
-    return 0
-  fi
+	bup() {
 
-  # Run the bup function with the concurrency and pass the outdated casks as separate arguments
-  echo "Running bup with outdated casks: ${outdated_casks[@]}"
-  bup "${outdated_casks[@]}"
-}
+		# If no casks are provided, print a usage message
+		if [[ $# -eq 0 ]]; then
+			echo "Usage: bup input1 input2 ..."
+			return 1
+		fi
 
-bupoutdated() {
-  # Check if jq is installed
-  if ! command -v jq > /dev/null 2>&1; then
-    echo "Error: jq is not installed. Please install jq to proceed."
-    return 1
-  fi
+		# Fetch with specified concurrency
+		brew fetch "$@"
 
-  # Get the list of outdated casks in JSON format and extract the names using jq
-  local outdated_casks
-  local outdated_formulae
-  outdated_casks=($(brew outdated --json | jq -r '.casks[].name'))
-  outdated_formulae=($(brew outdated --json | jq -r '.formulae[].name'))
+		# Upgrade the provided casks
+		echo "Upgrading: $@"
+		brew upgrade "$@"
+	}
 
-  # join the arrays into a single array
-  outdated=("${outdated_casks[@]}" "${outdated_formulae[@]}")
+	bupall() {
+		# Check if jq is installed
+		if ! command -v jq >/dev/null 2>&1; then
+			echo "Error: jq is not installed. Please install jq to proceed."
+			return 1
+		fi
 
-  # Check if there are no outdated casks
-  if [[ ${#outdated[@]} -eq 0 ]]; then
-    echo "No outdated packages found."
-    return 0
-  fi
+		# Default concurrency level
+		local except_list=()
 
-  # Run the bup function with the concurrency and pass the outdated casks as separate arguments
-  echo "Running bup with outdated packages: ${outdated[@]}"
-  bup "${outdated[@]}"
-}
+		# Check for --except flag and capture the arguments
+		while [[ $# -gt 0 ]]; do
+			case $1 in
+			--except)
+				shift
+				while [[ $# -gt 0 && $1 != --* ]]; do
+					except_list+=("$1")
+					shift
+				done
+				;;
+			*)
+				break
+				;;
+			esac
+		done
 
-export PATH="/usr/local/sbin:$PATH"
+		# Get the list of outdated casks in JSON format and extract the names using jq
+		local outdated_casks
+		outdated_casks=($(brew outdated --cask --greedy-auto-updates --json | jq -r '.casks[].name'))
 
-if [ -d "/opt/workbrew" ]; then
-  eval $(/opt/workbrew/bin/brew shellenv)
+		# Filter out the casks in the except list
+		for except in "${except_list[@]}"; do
+			outdated_casks=("${outdated_casks[@]/$except/}")
+		done
+
+		outdated_casks=($(echo "${outdated_casks[@]}" | tr ' ' '\n' | grep -v '^$'))
+
+		# Check if there are no outdated casks
+		if [[ ${#outdated_casks[@]} -eq 0 ]]; then
+			echo "No outdated casks found."
+			return 0
+		fi
+
+		# Run the bup function with the concurrency and pass the outdated casks as separate arguments
+		echo "Running bup with outdated casks: ${outdated_casks[@]}"
+		bup "${outdated_casks[@]}"
+	}
+
+	bupoutdated() {
+		# Check if jq is installed
+		if ! command -v jq >/dev/null 2>&1; then
+			echo "Error: jq is not installed. Please install jq to proceed."
+			return 1
+		fi
+
+		# Get the list of outdated casks in JSON format and extract the names using jq
+		local outdated_casks
+		local outdated_formulae
+		outdated_casks=($(brew outdated --json | jq -r '.casks[].name'))
+		outdated_formulae=($(brew outdated --json | jq -r '.formulae[].name'))
+
+		# join the arrays into a single array
+		outdated=("${outdated_casks[@]}" "${outdated_formulae[@]}")
+
+		# Check if there are no outdated casks
+		if [[ ${#outdated[@]} -eq 0 ]]; then
+			echo "No outdated packages found."
+			return 0
+		fi
+
+		# Run the bup function with the concurrency and pass the outdated casks as separate arguments
+		echo "Running bup with outdated packages: ${outdated[@]}"
+		bup "${outdated[@]}"
+	}
 fi

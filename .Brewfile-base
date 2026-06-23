@@ -8,8 +8,9 @@ ENV["PATH"] = "/usr/local/bin:#{ENV["PATH"]}"
 puts "==> Not tier one configuration detected. Installing static binaries for some tools." if OS.not_tier_one_configuration?
 
 # Base
-tap "bevanjkay/formulae"
-tap "bevanjkay/tap"
+tap "bevanjkay/formulae", trusted: true
+tap "bevanjkay/tap", trusted: true
+tap "gatewaymedia/tap", trusted: true
 
 if OS.not_tier_one_configuration?
   cask "bevanjkay/tap/jq-static"

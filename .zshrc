@@ -149,9 +149,6 @@ if quiet_which brew; then
 			debug_mode=true
 		fi
 
-		# Bottled formulae the Brewfiles replace with static casks on non-tier-one macOS
-		local legacy_formulae=(ffmpeg imagemagick jq mas mole yt-dlp)
-
 		# Get macOS version
 		macos_version=$(sw_vers -productVersion)
 
@@ -166,24 +163,24 @@ if quiet_which brew; then
 			return
 		fi
 
-		# List installed brew formulae
-		installed_formulae=$(brew ls --formula)
+		# The Brewfiles install no formulae here, and without bottles each one is an
+		# unsupported source build, so anything installed is a leftover or a manual install
+		local installed_formulae=($(brew ls --formula))
 
-		local formula
-		local uninstalled=false
-		for formula in "${legacy_formulae[@]}"; do
-			if echo "$installed_formulae" | grep -qx "$formula"; then
-				echo "Running on macOS Ventura or older ($macos_version): uninstalling $formula..."
-				brew uninstall "$formula"
-				uninstalled=true
-			elif [ "$debug_mode" = true ]; then
-				echo "$formula is not installed."
+		if [ ${#installed_formulae[@]} -eq 0 ]; then
+			if [ "$debug_mode" = true ]; then
+				echo "No formulae installed."
 			fi
-		done
+			return
+		fi
 
-		# Remove dependencies and build tools left behind by source builds
-		if [ "$uninstalled" = true ]; then
-			brew autoremove
+		echo "Running on macOS Ventura or older ($macos_version). Installed formulae:"
+		printf '  %s\n' "${installed_formulae[@]}"
+		if read -q "?Uninstall all of these? [y/N] "; then
+			echo
+			brew uninstall --formula "${installed_formulae[@]}"
+		else
+			echo
 		fi
 	}
 

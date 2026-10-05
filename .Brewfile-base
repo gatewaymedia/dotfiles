@@ -23,6 +23,7 @@ else
 end
 
 cask "gateway-brewfile-base", greedy: true if cask_installed?("gateway-brewfile-base")
+cask "residechurch/tap/gateway-dotfiles", greedy: true
 cask "bevanjkay/tap/zsh-autosuggestions-static"
 cask "bevanjkay/tap/zsh-syntax-highlighting-static"
 cask "font-sf-mono"

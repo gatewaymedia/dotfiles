@@ -149,52 +149,41 @@ if quiet_which brew; then
 			debug_mode=true
 		fi
 
-		# List installed brew formulas
-		installed_formulae=$(brew ls --formula)
-
-		# Check if none of the required formulas are installed and exit early if so
-		if ! echo "$installed_formulae" | grep -q -e "yt-dlp" -e "mas" -e "ffmpeg"; then
-			if [ "$debug_mode" = true ]; then
-				echo "None of yt-dlp, mas, or ffmpeg are installed. Exiting."
-			fi
-			return
-		fi
+		# Bottled formulae the Brewfiles replace with static casks on non-tier-one macOS
+		local legacy_formulae=(ffmpeg imagemagick jq mas mole yt-dlp)
 
 		# Get macOS version
 		macos_version=$(sw_vers -productVersion)
 
-		# Extract the major version and minor version
+		# Extract the major version
 		major_version=$(echo "$macos_version" | cut -d '.' -f 1)
 
-		# Check if macOS version is Monterey (12.x) or older
-		if [ "$major_version" -eq 12 ] || [ "$major_version" -lt 12 ]; then
-			echo "Running on macOS Monterey or older: $macos_version"
-
-			# List installed brew formulas
-			installed_formulae=$(brew ls --formula)
-
-			# Uninstall yt-dlp if installed
-			if echo "$installed_formulae" | grep -q "yt-dlp"; then
-				echo "yt-dlp is installed. Uninstalling..."
-				brew uninstall yt-dlp
-			fi
-
-			# Uninstall mas if installed
-			if echo "$installed_formulae" | grep -q "mas"; then
-				echo "mas is installed. Uninstalling..."
-				brew uninstall mas
-			fi
-
-			# Uninstall ffmpeg if installed
-			if echo "$installed_formulae" | grep -q "ffmpeg"; then
-				echo "ffmpeg is installed. Uninstalling..."
-				brew uninstall ffmpeg
-			fi
-		else
-			# Only print the version message if debug mode is enabled
+		# Check if macOS version is Ventura (13.x) or older
+		if [ "$major_version" -gt 13 ]; then
 			if [ "$debug_mode" = true ]; then
 				echo "Not running on macOS Ventura or older. Current version: $macos_version"
 			fi
+			return
+		fi
+
+		# List installed brew formulae
+		installed_formulae=$(brew ls --formula)
+
+		local formula
+		local uninstalled=false
+		for formula in "${legacy_formulae[@]}"; do
+			if echo "$installed_formulae" | grep -qx "$formula"; then
+				echo "Running on macOS Ventura or older ($macos_version): uninstalling $formula..."
+				brew uninstall "$formula"
+				uninstalled=true
+			elif [ "$debug_mode" = true ]; then
+				echo "$formula is not installed."
+			fi
+		done
+
+		# Remove dependencies and build tools left behind by source builds
+		if [ "$uninstalled" = true ]; then
+			brew autoremove
 		fi
 	}
 

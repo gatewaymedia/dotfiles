@@ -14,13 +14,13 @@ jobs:
       contents: read
     steps:
       - name: Set up Homebrew
-        uses: Homebrew/actions/setup-homebrew@04a6d8cfe9d251e2afb78c5bdc6274ec9642aea2 # master
+        uses: Homebrew/actions/setup-homebrew@e99025eb970cfa124b8284a35463d87426917478 # 2026.09.28.1
         with:
           core: false
           cask: false
           test-bot: false
 
-      - uses: Homebrew/actions/cache-homebrew-prefix@04a6d8cfe9d251e2afb78c5bdc6274ec9642aea2 # main
+      - uses: Homebrew/actions/cache-homebrew-prefix@e99025eb970cfa124b8284a35463d87426917478 # 2026.09.28.1
         with:
           install: zsh
           uninstall: true
